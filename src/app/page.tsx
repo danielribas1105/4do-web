@@ -1,45 +1,37 @@
 "use client"
 import QuadrantPanel from "@/components/quadrant-panel"
+import TaskModal from "@/components/task-modal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { QUADRANTS } from "@/constants/quadrants"
-import { useState, useCallback } from "react"
-import SettingsPage from "./settings/page"
-import AboutPage from "./about/page"
-import TaskModal from "@/components/task-modal"
+import { useStorage } from "@/hooks/use-storage"
 import { Task } from "@/types/other-types"
 import { Quadrant } from "@/types/quadrants-config"
-import { INITIAL_TASKS } from "@/constants/initial-tasks"
+import { useState } from "react"
+import AboutPage from "./about/page"
+import SettingsPage from "./settings/page"
 
 type Tab = "matrix" | "settings" | "about"
 type FilterType = "all" | "active" | "completed"
 
 export default function MainPage() {
-   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS)
+   const {
+      tasks,
+      lastBackupDate,
+      backupSuggestion,
+      addTask,
+      updateTask,
+      deleteTask,
+      toggleComplete,
+      exportBackup,
+      importBackup,
+      dismissBackupSuggestion,
+   } = useStorage()
    const [activeTab, setActiveTab] = useState<Tab>("matrix")
    const [filter, setFilter] = useState<FilterType>("active")
    const [modalOpen, setModalOpen] = useState(false)
    const [editingTask, setEditingTask] = useState<Task | null>(null)
    const [defaultQ, setDefaultQ] = useState<Quadrant>("Q1")
-
-   const addTask = useCallback((task: Task) => setTasks((prev) => [...prev, task]), [])
-   const updateTask = useCallback(
-      (task: Task) => setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t))),
-      [],
-   )
-   const deleteTask = useCallback(
-      (id: string) => setTasks((prev) => prev.filter((t) => t.id !== id)),
-      [],
-   )
-   const toggleComplete = useCallback(
-      (id: string) =>
-         setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))),
-      [],
-   )
-   const clearCompleted = useCallback(
-      () => setTasks((prev) => prev.filter((t) => !t.completed)),
-      [],
-   )
 
    const openNew = (quadrant: Quadrant) => {
       setEditingTask(null)
@@ -68,6 +60,10 @@ export default function MainPage() {
 
    const activeCount = tasks.filter((t) => !t.completed).length
    const completedCount = tasks.filter((t) => t.completed).length
+
+   const clearCompleted = () => {
+      tasks.filter((t) => t.completed).forEach((t) => deleteTask(t.id))
+   }
 
    const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
       {
