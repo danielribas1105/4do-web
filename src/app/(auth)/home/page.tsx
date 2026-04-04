@@ -8,12 +8,11 @@ import { QUADRANTS } from "@/constants/quadrants"
 import { useAuth } from "@/hooks/use-auth"
 import { useTasks } from "@/hooks/use-tasks"
 import { useState } from "react"
-import AboutPage from "./about/page"
-import SettingsPage from "./settings/page"
 import { FilterType, Task, TaskCreate, TaskUpdate } from "@/types/tasks"
 import { Quadrant } from "@/types/quadrants-config"
-import LoginPage from "./(public)/login/page"
-
+import LoginPage from "@/app/(public)/login/page"
+import SettingsPage from "../settings/page"
+import AboutPage from "../about/page"
 type Tab = "matrix" | "settings" | "about"
 
 export default function MainPage() {
@@ -196,7 +195,7 @@ export default function MainPage() {
                </div>
 
                <div className="hidden sm:flex items-center gap-2 shrink-0">
-                  <span className="text-xs text-zinc-400 truncate max-w-[140px]">{user.email}</span>
+                  <span className="text-xs text-zinc-400 truncate max-w-35">{user.email}</span>
                   <Button variant="ghost" size="sm" onClick={logout}>
                      Sair
                   </Button>
